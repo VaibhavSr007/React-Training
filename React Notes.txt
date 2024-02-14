@@ -1,0 +1,29 @@
+1> creating react apps:
+
+npm install -g create-react-app
+npx create-react-app <App_name>
+cd <App_name> 
+npm start
+
+
+2> Imp topics:
+
++ Lexical Scope
++ Scope
++ Context
++ Closure
++ Protype
++ Prototypical Inheritence
++ JavaScript is Function
++ Core Concept of Functional Language:
++ Pure Functions
++ Immutability
++ Higher Order Function
++ Is JavaScript single Threaded
+
+
+
+3> json-server
+
++ npm i -g json-server
++ npx json-server <JsonFileName>.json
