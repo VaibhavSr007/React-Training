@@ -27,3 +27,5 @@ npm start
 
 + npm i -g json-server
 + npx json-server <JsonFileName>.json
+
+4> Mayank's Repo: https://github.com/Mayankgupta688/FarePoratal/tree/master
