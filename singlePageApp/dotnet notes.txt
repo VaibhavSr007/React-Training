@@ -1,0 +1,205 @@
+Suchita maam:- 9953277230
+
+*********************************************************************************************************************************************************************************************************************************
+
+For DB connection: 
+
+1> Add below 6 lines in the .csproj file in <ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+
+2> Run below command in cmd
+
+dotnet restore  // output must come as ( All projects are up-to-date for restore )
+
+
+3> Create new table in DB (ACE-5 2024) and insert some data in the table
+
+
+4> Run below command in cmd and close & Reopen the cmd
+
+dotnet tool install --global dotnet-ef --version 8.*
+// it will say the dotnet-ef is installed and reopen cmd to use it
+
+
+5> Run below command in cmd and all your tables will come in the vscode under models
+
+dotnet ef dbcontext scaffold "Server=DEVSQL.Corp.local;Database=ACE 5- 2024;Trusted_Connection=True;encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -o Models
+
+
+******************************************************************************************************************************************************************************************************
+
+FOR view files automated generation: (views code generator)
+
+1> Use the below command and replace "Create" with whatever action we are doing like "list" if we are returning list in Controller and Replace "AddEmployees" with the name of your action in EmployeeController
+dotnet aspnet-codegenerator view AddEmployee Create -m Employee -outDir Views\Employee --useDefaultLayout --referenceScriptLibraries
+
+other installations: if needed:
++ dotnet tool install -g dotnet-aspnet-codegenerator
++ dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
+
+
+**************************************************************************************************************************************************************************************
+
+DB connection in mvc apps and using the db tables in MVC apps: (EF core in MVC core):
+
+1> Make a <ControllerName>Controller in the Controller folder.
+
+2> Import the tables of the db using (Scaffolding) the way done in "Console Apps" already given above.
+dotnet ef dbcontext scaffold "Server=DEVSQL.Corp.local;Database=ACE 5- 2024;Trusted_Connection=True;encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -o Models -t tablename
+// adding "-t tablename" at the end of command helps to import only specified tables.
+
+3> Define action method in the Controller.
++ import the db and return the desired table in view form. as done BankController project.
+
+4> Make a folder inside views folder with same name as of "<ControllerName>" defined in Controller.
+
+5> In the views/<ControllerName> create a views file with name same as "action method" defined in the <ControllerName>Controller.
+                                                    OR
+Alternatively use Code Generator to automatically create views files in the  views/<ControllerName>:
+dotnet aspnet-codegenerator view <MethodName> list -m <ModelName> -outDir Views\<ControllerName> --useDefaultLayout --referenceScriptLibraries
+// Refer above portion for more on this Code Generator part.
+
+
+# Now we have accessed the data of the tables of DB from controllers and passed to the views for displaying to the users
+
+
+********************************************************************************************************************************************************************************************************************
+
+Adding the data in tables in MVC architecture:
+
+1> Create a action method and simply return view() // just like GetAllAccounts [HttpGet] by default
+
+2> Just replace the "list" with "Create" in auto view generator Scaffolding and you will get your .cshtml file for taking input for adding new data
+dotnet aspnet-codegenerator view <MethodName> Create -m <ModelName> -outDir Views\<ControllerName> --useDefaultLayout --referenceScriptLibraries
+
+3> Now create a [HttpPost] action method in the Controller class and pass the data as parameter to the method and add parameter value to the db.<TableName> and savechanges return RedirctToAction("ActionName")
+
+************************************************************************************************************************************************************************************************************************
+
+
+Supported view templates for code generator in scaffolding views: 'Empty|Create|Edit|Delete|Details|List'"
+
+
+************************************************************************************************************************************************************************************************************
+
+Method for using database for CRUD operations:
+
+1> Add below lines in the 
+In appsettings.json:(Line no 8)
+ "ConnectionStrings": {
+    "DefaultConnection": "Server=DEVSQL.Corp.local;Database=ACE 5- 2024;Trusted_Connection=True;encrypt=False;"
+  },
+
+2>  Add below line below builder. section of program.js
+builder.Services.AddDbContext<Ace52024Context>(options =>
+       options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+3> Add below lines in the <ControllerName>Conroller
+public static Ace52024Context db;
+        
+        //Dependency Injection  in constructor
+        public BankController(Ace52024Context _db)
+        {
+            db=_db;
+        }
+
+***************************************************************************************************************************************************************
+
+Adding HttpContext for storing data in a session:
+
+1> Add below code below the builder section in program.cs
+builder.Services.AddSession();
+
+2> Add the below part at start of app section in program.cs
+app.UseSession(); 
+
+3> Now to set the values in the session storage like below:
+ HttpContext.Session.SetString("uname",s.Username); <s.username> is value and <uname> is name by which it will refered in the session
+
+4> to get the value stored in session storage:
+HttpContext.Session.GetString("uname");
+
+5> to clear the session storage:
+HttpContext.Session.Clear();
+
+
+***************************************************************************************************************************************************************************************************
+
+Importing the Db tables and creating the controllers automacticlly (Scaffolding): 
+
+1> Add below in program.cs
+builder.Services.AddDbContext<Ace52024Context>(options =>
+       options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+2> Add below in csproj file
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+    <PrivateAssets>all</PrivateAssets>
+    <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+3> Make InvariantGlobalization "False" in the csproj file
+
+4> import the tables from db:
++ dotnet ef dbcontext scaffold "Server=DEVSQL.Corp.local;Database=ACE 5- 2024;Trusted_Connection=True;encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -o Models -t student007
+
+5> Run below in cmd:
++ dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design --version 8.0.0
++ Dotnet restore
+
+6> creating the controller automatically (Scaffloding the contoller)
+dotnet aspnet-codegenerator controller -name Student007Controller --relativeFolderPath Controllers -m Student007 -dc Ace52024Context -api
+
+*****************************************************************************************************************************************************************************************************
+
+When Doing layers always add "builder.Services.AddScoped<IFlight<VsFlight>, FlightRepo>();" for all your interfaces and thier consuming classes in the project
+ 
+
+****************************************************************************************************************************************************************************************************
+
+Shrivall's maam's Github Repo:
+
+https://github.com/Shrivalli/FPBatchIV/tree/main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
